@@ -169,26 +169,26 @@ var LocMapRESTAPI = function() {
 
         user.data.activated = true;
 
-        var res = yield this._setFromRequest(user, requestData, suspend.resumeRaw());
-        if (res[0] !== 'OK') {
-            return callback(res[0], res[1]);
+        var [status, msg] = yield this._setFromRequest(user, requestData, suspend.resumeRaw());
+        if (status !== 'OK') {
+            return callback(status, msg);
         }
         user.data.authorizationToken = locMapCommon.generateAuthToken();
 
-        var setResult = (yield user.setData(suspend.resumeRaw(), null))[0];
+        var [setResult] = yield user.setData(suspend.resumeRaw(), null);
 
         if (typeof setResult === 'number') {
             return callback(400, 'Signup error');
         }
 
-        var code = (yield locMapConfirmationCode.createConfirmationCode(userId, 
-                suspend.resumeRaw()))[0];
+        var [code] = yield locMapConfirmationCode.createConfirmationCode(userId, 
+                suspend.resumeRaw());
 
         if (code === 400) {
             return callback(400, 'Could not generate verification code');
         }
 
-        var timeoutResult = (yield user.setTimeout(suspend.resumeRaw()))[0];
+        var [timeoutResult] = yield user.setTimeout(suspend.resumeRaw());
 
         if (timeoutResult !== 200) {
             logger.warn('Could not set timeout for user ' + userId);
@@ -252,8 +252,8 @@ var LocMapRESTAPI = function() {
 
         var userId = user.data.userId;
 
-        var code = (yield locMapResetCode.createResetCode(userId, 
-                suspend.resumeRaw()))[0];
+        var [code] = yield locMapResetCode.createResetCode(userId, 
+                suspend.resumeRaw());
 
         if (typeof code === 'number') {
             return callback(400, 'Signup error.');
@@ -278,13 +278,13 @@ var LocMapRESTAPI = function() {
 
         user.data.accountRecoveryMode = 0;
 
-        var res = yield this._setFromRequest(user, requestData, suspend.resumeRaw());
-        if (res[0] !== 'OK') {
-            return callback(res[0], res[1]);
+        var [status, msg] = yield this._setFromRequest(user, requestData, suspend.resumeRaw());
+        if (status !== 'OK') {
+            return callback(status, msg);
         }
         user.data.authorizationToken = locMapCommon.generateAuthToken();
 
-        var setResult = (yield user.setData(suspend.resumeRaw()))[0];
+        var [setResult] = yield user.setData(suspend.resumeRaw());
 
         if (typeof setResult === 'number') {
             return callback(400, 'Signup error');
@@ -1181,7 +1181,7 @@ var LocMapRESTAPI = function() {
             + '/do-delete/' + userId + '/' + deleteCode;
 
         var user = new LocMapUserModel(userId);
-        var data = (yield user.getData(suspend.resumeRaw()))[0];
+        var [data] = yield user.getData(suspend.resumeRaw());
         var lang = data.language;
         assert.ok(!!lang);
 
@@ -1193,7 +1193,7 @@ var LocMapRESTAPI = function() {
     this.doDelete = suspend(function* (userId, deleteCode, callback) {
 
         var user = new LocMapUserModel(userId);
-        var data = (yield user.getData(suspend.resumeRaw()))[0];
+        var [data] = yield user.getData(suspend.resumeRaw());
         var lang = data.language;
         assert.ok(!!lang);
 
@@ -1227,7 +1227,7 @@ var LocMapRESTAPI = function() {
 
         assert.ok(typeof userId === 'string' && userId.length > 10);
         var user = new LocMapUserModel(userId);
-        var data = (yield user.getData(suspend.resumeRaw()))[0];
+        var [data] = yield user.getData(suspend.resumeRaw());
         var lang = data.language;
         assert.ok(!!lang);
 
@@ -1236,8 +1236,8 @@ var LocMapRESTAPI = function() {
 
         var deleteLink = conf.get('locMapConfig').baseUrl
             + '/confirm-delete/' + userId + '/' + code;
-        var sent = (yield locMapEmail.sendDeleteEmail(email, deleteLink,
-                    user.language, suspend.resumeRaw()))[0];
+        var [sent] = yield locMapEmail.sendDeleteEmail(email, deleteLink,
+                    user.language, suspend.resumeRaw());
 
         assert.ok(typeof sent === 'boolean');
 

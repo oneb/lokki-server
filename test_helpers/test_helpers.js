@@ -182,7 +182,9 @@ module.exports = {
     // this function must be first as it starts server for testing
     startServer: function(test) {
         var spawn = require('child_process').spawn;
-        testServerProcess = spawn('node', ['./lokki-server.js']);
+        var opts = conf.get('testing').nodeoptions;
+        opts += ' ./lokki-server.js';
+        testServerProcess = spawn('node', opts.split(' '));
         var serverStarted = false;
 
         testServerProcess.stdout.setEncoding('utf8');

@@ -238,7 +238,7 @@ var LocMapCommon = function() {
             for (var i = 0; i < users.length; ++i) {
                 var userId = users[i].split(':')[1];
                 var user = new LocMapUserModel(userId);
-                var data = (yield user.getData(suspend.resumeRaw()))[0];
+                var [data] = yield user.getData(suspend.resumeRaw());
                 if (!data.email) {
                     logger.error('Could not get email of user '+users[i]);
                 } else if (data.email === email) {

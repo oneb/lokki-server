@@ -5,7 +5,12 @@ See LICENSE for details
 
 'use strict';
 
+// this must be set before config.js is loaded
 process.env.NODE_ENV = 'test';
+
+// (this uses config.js)
+require('./lib/verifyHarmony');
+
 var reporter = require('nodeunit').reporters.default;
 
 process.on('uncaughtException', function(err) {

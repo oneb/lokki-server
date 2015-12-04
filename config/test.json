@@ -12,5 +12,6 @@
     "logging": {
         "level": "error"
     },
-    "port": 9001
+    "port": 9001,
+    "env": "test"
 }

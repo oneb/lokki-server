@@ -9,8 +9,6 @@ var helpers = require('../../test_helpers/test_helpers');
 var lmHelpers = require('../test_helpers/locMapHelpers');
 var conf = require('../../lib/config');
 
-var suspend = require('suspend');
-
 var testUserEmail = 'user1@example.com.invalid';
 var testUserEmail2 = 'user2@example.com.invalid';
 var testUserEmail3 = 'user3@example.com.invalid';
@@ -55,9 +53,6 @@ var tests = {};
 
 // Tests that both API versions use
 tests.both = { };
-
-tests.v1 = {};
-tests.v2 = {};
 
 // User signup call returns correct information.
 tests.both.userSignUpReply = function(version) {
@@ -132,7 +127,7 @@ tests.both.userDashboardAuthentication = function(version) {
 };
 
 // User dashboard has correct information.
-tests.v1.userDashboardNewUser = function(version) {
+tests.both.userDashBoardNewUser = function(version) {
     return function (test) {
         test.expect(4);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth, reply) {
@@ -147,22 +142,8 @@ tests.v1.userDashboardNewUser = function(version) {
     }
 };
 
-tests.v2.userDashboardNewUser = function (version) {
-    return suspend(function* (test) {
-        var res = yield lmHelpers.createLocMapUser(
-               test, testUserEmail, 'dev1', suspend.resumeRaw()); 
-        var auth = res[0];
-        var reply = res[1];
-        var res = (yield lmHelpers.api.get(test, 
-               '/' + version + '/user/' + reply.id + '/dashboard', auth, suspend.resumeRaw()))[0];
-        var dash = JSON.parse(JSON.stringify(lmHelpers.userDashboardv2));
-        test.deepEqual(res.data, dash);
-        test.done();
-    });
-};
-
 // User dashboard contains location when it has been posted.
-tests.both.userDashboardWithLocation = function(version) {
+tests.both.userDashBoardWithLocation = function(version) {
     return function (test) {
     test.expect(8);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth, reply) {
@@ -214,7 +195,7 @@ tests.both.userLocation = function(version) {
 };
 
 // Allowing another user adds them to icansee and idmapping in dashboard.
-tests.v1.allowAnotherUser = function(version) {
+tests.both.allowAnotherUser = function(version) {
     return function (test) {
         test.expect(9);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth1, reply1) {
@@ -248,7 +229,7 @@ tests.v1.allowAnotherUser = function(version) {
 };
 
 // Multiple allow users do not create duplicate entries.
-tests.v1.allowAnotherUserMultiple = function(version) {
+tests.both.allowAnotherUserMultiple = function(version) {
     return function (test) {
         test.expect(10);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth1, reply1) {
@@ -288,7 +269,7 @@ tests.v1.allowAnotherUserMultiple = function(version) {
 };
 
 // Removing user location sharing allowance.
-tests.v1.allowAnotherUserRemove = function (version) {
+tests.both.allowAnotherUserRemove = function (version) {
     return function (test) {
         test.expect(12);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth1, reply1) {
@@ -324,7 +305,7 @@ tests.v1.allowAnotherUserRemove = function (version) {
 };
 
 // Cannot allow own user.
-tests.v1.cannotAllowSelf = function(version) {
+tests.both.cannotAllowSelf = function(version) {
     return function (test) {
         test.expect(5);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth1, reply1) {
@@ -343,7 +324,7 @@ tests.v1.cannotAllowSelf = function(version) {
 };
 
 // Cannot allow users with invalid email.
-tests.v1.cannotAllowInvalidEmail = function(version) {
+tests.both.cannotAllowInvalidEmail = function(version) {
     return function (test) {
         test.expect(5);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth1, reply1) {
@@ -362,7 +343,7 @@ tests.v1.cannotAllowInvalidEmail = function(version) {
 };
 
 // Emails are lowercased when used in allow method.
-tests.v1.allowWithUpperCasesEmail = function(version) {
+tests.both.allowWithUpperCasesEmail = function(version) {
     return function (test) {
         test.expect(7);
         lmHelpers.createLocMapUser(test, 'testuser1@example.com', 'dev1', function (auth1, reply1) {
@@ -384,7 +365,7 @@ tests.v1.allowWithUpperCasesEmail = function(version) {
 };
 
 // Dashboard shows another users location if allowed.
-tests.v1.userDashboardAllowedUserLocation = function(version) {
+tests.both.userDashboardAllowedUserLocation = function(version) {
     return function (test) {
         test.expect(14);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth1, reply1) {
@@ -414,7 +395,7 @@ tests.v1.userDashboardAllowedUserLocation = function(version) {
 };
 
 // Dashboard shows allowed users battery status.
-tests.v1.userDashboardAllowedUserBatteryStatus = function(version) {
+tests.both.userDashboardAllowedUserBatteryStatus = function(version) {
     return function (test) {
         test.expect(8);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth1, reply1) {
@@ -437,7 +418,7 @@ tests.v1.userDashboardAllowedUserBatteryStatus = function(version) {
 };
 
 // Previously non-existing user shows up in idmapping if allowed by user.
-tests.v1.userDashboardIdMappingAllowedNewUser = function(version) {
+tests.both.userDashboardIdMappingAllowedNewUser = function(version) {
     return function (test) {
         test.expect(6);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth1, reply1) {
@@ -459,7 +440,7 @@ tests.v1.userDashboardIdMappingAllowedNewUser = function(version) {
 };
 
 // Multiple allowed users show up correctly.
-tests.v1.seeMultipleAllowedUsers = function(version) {
+tests.both.seeMultipleAllowedUsers = function(version) {
     return function (test) {
         test.expect(10);
         lmHelpers.createLocMapUser(test, testUserEmail, 'dev1', function (auth1, reply1) {
@@ -629,6 +610,8 @@ tests.both.setVisibility = function(version) {
         });
     }
 };
+
+tests.v1 = {}, tests.v2 = {};
 
 // Create multiple places with same name
 tests.v1.createMultiplePlacesWithSameNameShouldError = function(version) {

@@ -234,22 +234,11 @@ module.exports = function (app) {
 
     // Receive user locations for the users current one can see,
     // list of users than can see current user and current global visibility status
-    routeUser(GET, 'v1', 'dashboard', function (req, res) {
+    routeUser(GET, ['v1', 'v2'], 'dashboard', function (req, res) {
         var cache = new Cache();
         cache.cache('locmapuser', req.params.userId, req.cachedUserObjFromAuthorization);
 
         locMapRestApi.getUserDashboard(req.params.userId, cache, function (status, result) {
-            logger.trace('Dashboard reply status: ' + status +
-                ' contents: ' + JSON.stringify(result));
-            res.send(status, result);
-        });
-    });
-
-    routeUser(GET, 'v2', 'dashboard', function (req, res) {
-        var cache = new Cache();
-        cache.cache('locmapuser', req.params.userId, req.cachedUserObjFromAuthorization);
-
-        locMapRestApi2.getUserDashboard(req.params.userId, cache, function (status, result) {
             logger.trace('Dashboard reply status: ' + status +
                 ' contents: ' + JSON.stringify(result));
             res.send(status, result);
@@ -472,10 +461,8 @@ module.exports = function (app) {
         res.removeHeader('Content-Disposition');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-        var result = yield locMapRestApi.requestDelete(req.params.emailAddr,
+        var [status, result] = yield locMapRestApi.requestDelete(req.params.emailAddr,
                 suspend.resumeRaw());
-        var status = result[0];
-        var result = result[1];
 
         if (status === 200) {
             res.send(200, result);
@@ -487,10 +474,8 @@ module.exports = function (app) {
         res.removeHeader('Content-Disposition');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-        var result = yield locMapRestApi.confirmDelete(req.params.userId, 
+        var [status, result] = yield locMapRestApi.confirmDelete(req.params.userId, 
                 req.params.deleteCode, suspend.resumeRaw());
-        var status = result[0];
-        var result = result[1];
 
         if (status === 200) {
             res.send(200, result);
@@ -502,10 +487,8 @@ module.exports = function (app) {
         res.removeHeader('Content-Disposition');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-        var result = yield locMapRestApi.doDelete(req.params.userId,
+        var [status, result] = yield locMapRestApi.doDelete(req.params.userId,
                 req.params.deleteCode, suspend.resumeRaw());
-        var status = result[0];
-        var result = result[1];
 
         if (status === 200) {
             res.send(200, result);

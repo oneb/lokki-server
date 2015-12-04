@@ -5,6 +5,8 @@ See LICENSE for details
 
 'use strict';
 
+require('./lib/verifyHarmony');
+
 // lokki-server main file
 var conf = require('./lib/config');
 var logger = require('./lib/logger');

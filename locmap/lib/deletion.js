@@ -33,13 +33,11 @@ exports.deleteUser = suspend(function* (userId, callback) {
             var id = shareKeys[i].split(':')[1];
             var share = new LocMapShareModel(id);
 
-            var result = yield share.getData(suspend.resumeRaw());
+            var [status, data] = yield share.getData(suspend.resumeRaw());
             
-            if (result[0] === 404) {
+            if (status === 404) {
                 throw new Error('Could not read data for '+shareKeys[i]);
-            } else {
-                var data = result[0];
-            }
+            } 
 
             var lists = [
                 data.canSeeMe, 
@@ -62,9 +60,9 @@ exports.deleteUser = suspend(function* (userId, callback) {
                 data.nameMapping = JSON.stringify(mapping);
             }
 
-            var result = yield share.setData(suspend.resumeRaw(), data);
+            var [status, data] = yield share.setData(suspend.resumeRaw(), data);
 
-            if (result[0] === 404) {
+            if (status === 404) {
                 throw new Error('Could not write '+shareKeys[i]);
             }
         }

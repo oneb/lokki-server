@@ -55,8 +55,8 @@ module.exports.deleteNonexistentFail = suspend(function* (test) {
 module.exports.deleteCodeCreated = suspend(function* (test) {
 
     var myEmail = 'user@example.com.invalid';
-    var reply = (yield lmHelpers.createLocMapUser(test,  
-            myEmail, 'dev1', suspend.resumeRaw()))[1];
+    var [auth, reply] = yield lmHelpers.createLocMapUser(test,  
+            myEmail, 'dev1', suspend.resumeRaw());
 
     test.ok(!(yield helpers.keyExists(
                 codePrefix + reply.id, suspend.resume())));
@@ -71,8 +71,8 @@ module.exports.deleteCodeCreated = suspend(function* (test) {
 module.exports.deleteStartToFinish = suspend(function* (test) {
 
     var myEmail = 'user@example.com.invalid';
-    var reply = (yield lmHelpers.createLocMapUser(test,  
-            myEmail, 'dev1', suspend.resumeRaw()))[1];
+    var [auth, reply] = yield lmHelpers.createLocMapUser(test,  
+            myEmail, 'dev1', suspend.resumeRaw());
 
     test.ok(!!reply.id);
 
@@ -117,8 +117,8 @@ module.exports.deleteStartToFinish = suspend(function* (test) {
     test.ok(!!confirmDeletePostfix && confirmDeletePostfix.length > 5);
     test.ok(confirmDeletePostfix.indexOf(reply.id) > -1);
 
-    var res = (yield client.get(test, confirmDeletePostfix, {}, 
-                suspend.resumeRaw()))[0];
+    var [res] = yield client.get(test, confirmDeletePostfix, {}, 
+                suspend.resumeRaw());
 
     test.ok(!!res && !!res.body && res.body.length > 10);
     test.ok(res.statusCode === 200);
@@ -135,8 +135,8 @@ module.exports.deleteStartToFinish = suspend(function* (test) {
     test.ok(!!doDeletePostfix && doDeletePostfix.length > 10);
     test.ok(doDeletePostfix.indexOf(reply.id) > -1);
 
-    var res = (yield client.get(test, doDeletePostfix, {},
-                suspend.resumeRaw()))[0];
+    var [res] = yield client.get(test, doDeletePostfix, {},
+                suspend.resumeRaw());
 
     test.ok(!!res && !!res.body && res.body.length > 10);
 

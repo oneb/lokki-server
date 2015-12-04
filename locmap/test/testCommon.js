@@ -27,10 +27,10 @@ module.exports.testGetUserByEmail = suspend(function* (test) {
 
     var email1 = 'one@testing.invalid';
     var email2 = 'two@testing.invalid';
-    var reply1 = (yield lmHelpers.createLocMapUser(test,  
-            email1, 'dev1', suspend.resumeRaw()))[1];
-    var reply2 = (yield lmHelpers.createLocMapUser(test,  
-            email2, 'dev2', suspend.resumeRaw()))[1];
+    var [auth1, reply1] = yield lmHelpers.createLocMapUser(test,  
+            email1, 'dev1', suspend.resumeRaw());
+    var [auth2, reply2] = yield lmHelpers.createLocMapUser(test,  
+            email2, 'dev2', suspend.resumeRaw());
 
     test.ok(!!reply1.id && !!reply2.id);
 
